@@ -92,8 +92,52 @@ def shortest_path(source, target):
     If no possible path, returns None.
     """
 
-    # TODO
-    raise NotImplementedError
+    
+    num_explored = 0
+
+    # Initialize frontier to just the starting position
+    start = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier()
+    frontier.add(start)
+
+    # Initialize an empty explored set
+    explored = set()
+
+    # Keep looping until solution found
+    while True:
+
+        # If nothing left in frontier, then no path
+        if frontier.empty():
+            raise Exception("no solution")
+
+        # Choose a node from the frontier
+        node = frontier.remove()
+        num_explored += 1
+
+
+        # Mark node as explored
+        explored.add(node.state)
+
+        # Add neighbors to frontier
+        for movie, actor in neighbors_for_person(node.state):
+            if not frontier.contains_state(actor) and actor not in explored:
+                child = Node(state=actor, parent=node, action=movie)
+                if child.state == target:
+                    movieTies = []
+                    actors = []
+                    nodeChain = child
+                    while nodeChain.parent is not None:
+                        movieTies.append(nodeChain.action)
+                        actors.append(nodeChain.state)
+                        nodeChain = nodeChain.parent
+                    movieTies.reverse()
+                    actors.reverse()
+                    solution = [x for x in zip(movieTies, actors)]
+                    return solution
+
+                
+                frontier.add(child)
+                #print(people[node.state]["name"] + ' starred with '+ people[actor]["name"] + ' in ' + movies[movie]["title"])
 
 
 def person_id_for_name(name):
